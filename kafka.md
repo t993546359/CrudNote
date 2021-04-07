@@ -75,7 +75,7 @@ kafka通过**异步拉取机制**保障了消息处理的性能。 同时又通�
 ### 1.4 服务端参数
 
 #### 1.4.1 zookeeper.connect
-
+=
 连接zookpeeper集群的服务迪纳之以及端口地址
 
 #### 1.4.2 lISTENERS
@@ -91,7 +91,7 @@ kafka通过**异步拉取机制**保障了消息处理的性能。 同时又通�
 kafka在磁盘保留日志消息的路径。
 
 #### 1.4.5 MESSAGE.MAX.BYTES
-** 关键参数 message.max.bytes(broker), max.message.bytes(topic), max.request.size(producer)**
+**关键参数 message.max.bytes(broker), max.message.bytes(topic), max.request.size(producer)**
 
 
 节点进程一次所能接受消息的最大值，默认为1000012B. 此参数和max.message.bytes(topic) max.request.size(producer)相关。
@@ -164,7 +164,7 @@ kafkaProducer支持多个拦截器同时生效，按照配置项配置的拦截�
 
 
 ### 2.7 生产者整体架构
-** 关键参数： buffer.memory, max.block.ms**
+**关键参数： buffer.memory, max.block.ms**
 
 KafkasshInterceptors- --> --> ProduducersSerialixerzers ----> Partiitioners ---->  RecordAccumulator.(消息累加器)
 
@@ -174,14 +174,14 @@ KafkasshInterceptors- --> --> ProduducersSerialixerzers ----> Partiitioners ----
 
 
 #### 2.7.1 RecordAccumulator（消息累加器内部解析）
-** 关键参数： buffer.memory, max.block.ms**
+**关键参数： buffer.memory, max.block.ms**
 消息累加器内部维护了一个双端队列Deque\<ProducerBatch>，**每个分区都有**。
 Sender线程会读取双端队列中的头部的第一个元素(ProducerBatch) 消息批次进行发送。一个消息批次ProducerBatch可能包含多个ProducerRecord. 
 
 当生产者发送消息流量过大时，请调大**buffer.memory**或者**max.block.ms**值.
 
 #### 2.7.2 BufferPool (缓冲池 消息累加器内部概念)  TODO: 学习概念 NIO
-** 关键参数 Batch.size**
+**关键参数 Batch.size**
 Send线程向kafka broker发送消息时，需要创建一个**ByteBuffer**来保存发送的消息的。
 频繁的创建和释放资源是很消耗内存的，因此生产者维护了一个**BufferPool**来**实现缓存的高效复用**
 
@@ -215,6 +215,15 @@ Send线程会将数据保存在kafka里面的InFlights里面
 传统的点对点方式是基于队列的，生产者向队列中投放消息，消费者从队列中获取消息
 kafka又引入了消费者组的概念(Consumer Group)
 同一条消息只能被消费者组中的某个消费者处理。不同消费者组之间的消费流程相互独立。
+
+### 3.2 消费逻辑主要流程
+1. 创建消费者客户端实例并配置参数
+2. 订阅主题
+3. 拉取消息
+4. 消费完成提交位移
+5. 关闭消费者实例
+   
+### 3
 
 
 
