@@ -223,7 +223,43 @@ kafka又引入了消费者组的概念(Consumer Group)
 4. 消费完成提交位移
 5. 关闭消费者实例
    
-### 3
+#### 3.2.1 创建消费者客户端实例并配置参数
+创建ConsumerRecords 
+配置参数 bootstrap.servers, group.id, key/value.deserializer 
+
+#### 3.2.2 订阅主题
+```java
+public void subscribe(Collection<String> topic, ...)
+public void subscribe(Pattern pattern, ...)
+```
+消费者订阅以最后一次订阅为准，支持通过正则表达式匹配。
+消费者还可以通过assign方法指定订阅topic的部分分区。通过assign方法消费无消费者自动再均衡功能
+当没有订阅topic时 会抛出IllegalStateException异常
+
+#### 3.2.3 消息消费的具体方式
+kafka消费者消费主要是采用poll模式进行消费。即消费者主动向broker发出请求 拉取消息。
+poll方法的具体定义
+```java
+public ConsumerRecords<K, V> poll(final Duration timeout);
+```
+
+### 3.3 消费端内部逻辑
+
+#### 3.3.1 消费位移offset提交
+
+旧版本(0.9之前)，消费者位移保存在zookeeper中。
+新版本消费位移保存在内部的主题**_consumer_offsets**中
+**消费者提交的位移是下一次消费开始的位置，即LEO(Log End Offset)**
+
+先提交位移，再消费消息 会导致消息丢失
+先消费消息，再提交位移，会导致重复消费消息
+
+主要的几种提交位移方式
+1. 自动提交
+通过消费者客户端参数
+
+
+
 
 
 
